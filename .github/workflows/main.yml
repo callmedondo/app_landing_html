@@ -14,8 +14,8 @@ jobs:
 
       - name: Build Image docker
         run: |
-          echo "${{ github.event.repository.name }}:${GITHUB_REF##*/}"
-          docker build -t ${{ secrets.DOCKER_USER }}/${{ github.event.repository.name }}:${GITHUB_REF##*/}  .
+          echo "${{ github.event.repository.name }}:${{ github.ref_name }}"
+          docker build -t ${{ secrets.DOCKER_USER }}/${{ github.event.repository.name }}:${{ github.ref_name }}  .
           docker image ls
 
   test:
@@ -38,7 +38,7 @@ jobs:
         run: |
           docker version
           docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS}}
-          docker push ${{ secrets.DOCKER_USER }}/${{ github.event.repository.name }}:${GITHUB_REF##*/}
+          docker push ${{ secrets.DOCKER_USER }}/${{ github.event.repository.name }}:${{ github.ref_name }}
           docker logout
 
   deploy:
@@ -54,7 +54,7 @@ jobs:
           username: ${{ secrets.GCP_USER}}
           key: ${{ secrets.GCP_KEY}}
           script: |
-            docker pull ${{ secrets.DOCKER_USER }}/${{ github.event.repository.name }}:${GITHUB_REF##*/}
-            docker stop ${{ secrets.DOCKER_USER }}/${{ github.event.repository.name }}:${GITHUB_REF##*/} || true
-            docker rm ${{ secrets.DOCKER_USER }}/${{ github.event.repository.name }}:${GITHUB_REF##*/}} || true
-            docker run -d --name app_landing_html -p 80:80 ${{ secrets.DOCKER_USER }}/${{ github.event.repository.name }}:${GITHUB_REF##*/}
+            docker pull ${{ secrets.DOCKER_USER }}/${{ github.event.repository.name }}:${{ github.ref_name }}
+            docker stop ${{ secrets.DOCKER_USER }}/${{ github.event.repository.name }}:${{ github.ref_name }} || true
+            docker rm ${{ secrets.DOCKER_USER }}/${{ github.event.repository.name }}:${{ github.ref_name }} || true
+            docker run -d --name app_landing_html -p 80:80 ${{ secrets.DOCKER_USER }}/${{ github.event.repository.name }}:${{ github.ref_name }}
