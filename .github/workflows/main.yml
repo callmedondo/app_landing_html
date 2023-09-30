@@ -1,0 +1,59 @@
+on:
+  push:
+    branches:
+      - development
+env:
+  IMAGE_NAME_TAG: ${{ secret.DOCKER_USER }}/${{ github.event.repository.name }}:${{ github.base_ref }}
+
+jobs:
+  build:
+    name: build-stage
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Build Image docker
+        run: docker build -t $IMAGE_NAME_TAG  .
+
+  test:
+    name: test-stage
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Test App func
+        run: /
+          echo "ini proses build test(dummy test)"
+
+  release:
+    name: release-stage
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Push Image to Registry
+        run: |
+          docker version
+          docker login -u ${{ secret.DOCKER_USER }} -p ${{ secret.DOCKER_PASS}}
+          docker push $IMAGE_NAME_TAG
+          docker logout
+
+  deploy:
+    name: build-stage
+    runs-on: ubuntu-latest
+    needs: release
+
+    steps:
+      - name: SSH TO INSTANCE GCP
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secret.GCP_HOST}}
+          username: ${{ secret.GCP_USER}}
+          key: ${{ secret.GCP_KEY}}
+          script: |
+            docker pull $IMAGE_NAME_TAG
+            docker stop $IMAGE_NAME_TAG || true
+            docker rm $IMAGE_NAME_TAG || true
+            docker run -d --name app_landing_html -p 80:80 $IMAGE_NAME_TAG  
