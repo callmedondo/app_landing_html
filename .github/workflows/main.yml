@@ -14,7 +14,7 @@ jobs:
 
       - name: Build Image docker
         run: |
-          echo "${{ github.event.repository.name }}:${{ GITHUB_REF##*/ }}"
+          echo "${{ github.event.repository.name }}:${GITHUB_REF##*/}"
           docker build -t ${{ secrets.DOCKER_USER }}/${{ github.event.repository.name }}:${GITHUB_REF##*/}  .
 
   test:
@@ -37,7 +37,7 @@ jobs:
         run: |
           docker version
           docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS}}
-          docker push $IMAGE_NAME_TAG
+          docker push ${{ secrets.DOCKER_USER }}/${{ github.event.repository.name }}:${GITHUB_REF##*/}
           docker logout
 
   deploy:
