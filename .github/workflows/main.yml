@@ -40,8 +40,8 @@ jobs:
       - name: Push Image to Registry
         run: |
           echo "Push Image from build-stage : $IMAGE_TAG"
-          docker version
-          docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS}}
+          docker image ls
+          docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS }}
           docker push $IMAGE_TAG
           docker logout
 
