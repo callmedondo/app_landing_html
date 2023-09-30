@@ -34,7 +34,7 @@ jobs:
   release:
     name: release-stage
     runs-on: ubuntu-latest
-    needs: test
+    needs: [build, test]
 
     steps:
       - name: Push Image to Registry
