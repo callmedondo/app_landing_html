@@ -16,6 +16,7 @@ jobs:
         run: |
           echo "${{ github.event.repository.name }}:${GITHUB_REF##*/}"
           docker build -t ${{ secrets.DOCKER_USER }}/${{ github.event.repository.name }}:${GITHUB_REF##*/}  .
+          docker image ls
 
   test:
     name: test-stage
