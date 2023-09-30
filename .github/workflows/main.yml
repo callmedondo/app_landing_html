@@ -4,7 +4,7 @@ on:
       - development
 
 env:
-  IMAGE_TAG: ${{ secrets.DOCKER_USER }}/${{ github.event.repository.name }}:${{ github.ref_name }}
+  IMAGE_TAG: callmedondo/${{ github.event.repository.name }}:${{ github.ref_name }}
 
 jobs:
   build:
@@ -17,7 +17,7 @@ jobs:
 
       - name: Build Image docker
         run: |
-          echo "${{ github.event.repository.name }}:${{ github.ref_name }}"
+          echo "$IMAGE_TAG"
           docker build -t $IMAGE_TAG  .
           docker image ls
 
